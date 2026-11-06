@@ -1,0 +1,572 @@
+
+/* ==========================================================
+   FoodFusion — FusionBot AI Chatbot
+   Theme: Turmeric Yellow + Banana Leaf Green + Chilli Red
+   ========================================================== */
+
+#ffbot-root {
+  --b-bg: var(--surface);
+  --b-surface: var(--surface-2);
+  --b-text: var(--ink);
+  --b-muted: var(--muted);
+  --b-line: var(--line);
+  --b-accent: var(--turmeric);
+  --b-accent-ink: var(--leaf);
+  --b-user: var(--leaf);
+  --b-user-ink: #FFF1C2;
+  --b-bot: var(--surface-2);
+  --b-shadow: 0 18px 45px rgba(18, 55, 42, .22);
+
+  font-family: var(--body);
+  color: var(--b-text);
+}
+
+:root[data-theme="dark"] #ffbot-root {
+  --b-bg: var(--surface);
+  --b-surface: var(--surface-2);
+  --b-text: var(--ink);
+  --b-muted: var(--muted);
+  --b-line: var(--line);
+  --b-accent: var(--turmeric);
+  --b-accent-ink: var(--leaf);
+  --b-user: var(--turmeric);
+  --b-user-ink: var(--leaf);
+  --b-bot: var(--surface-2);
+  --b-shadow: 0 18px 45px rgba(0, 0, 0, .45);
+}
+
+#ffbot-root.hidden {
+  display: none !important;
+}
+
+/* ---------- Floating chatbot button ---------- */
+
+.ffbot-fab {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 900;
+
+  width: 62px;
+  height: 62px;
+  border: 0;
+  border-radius: 50%;
+
+  display: grid;
+  place-items: center;
+
+  background: var(--b-accent);
+  color: var(--b-accent-ink);
+
+  box-shadow: 0 8px 25px rgba(18, 55, 42, .3);
+  cursor: pointer;
+
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.ffbot-fab:hover {
+  transform: translateY(-4px) scale(1.04);
+  box-shadow: 0 12px 30px rgba(18, 55, 42, .35);
+}
+
+.ffbot-fab:active {
+  transform: scale(.94);
+}
+
+.ffbot-fab svg {
+  width: 29px;
+  height: 29px;
+}
+
+/* Keep chatbot above the floating cart */
+
+body:has(#floating-cart-bar:not(.hidden)) .ffbot-fab {
+  bottom: 92px;
+}
+
+/* ---------- Chatbot window ---------- */
+
+.ffbot-panel {
+  position: fixed;
+  right: 22px;
+  bottom: 96px;
+  z-index: 901;
+
+  width: min(400px, calc(100vw - 28px));
+  height: min(590px, calc(100vh - 125px));
+
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+
+  background: var(--b-bg);
+  color: var(--b-text);
+
+  border: 1px solid var(--b-line);
+  border-radius: 22px;
+
+  box-shadow: var(--b-shadow);
+}
+
+.ffbot-panel.open {
+  display: flex;
+  animation: ffbotIn .25s ease;
+}
+
+@keyframes ffbotIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ---------- Chatbot header ---------- */
+
+.ffbot-head {
+  min-height: 72px;
+  padding: 14px 17px;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  background: var(--turmeric);
+  color: var(--leaf);
+
+  border-bottom: 1px solid rgba(18, 55, 42, .12);
+}
+
+.ffbot-head > div {
+  display: grid;
+  gap: 3px;
+}
+
+.ffbot-head b {
+  font-family: var(--display);
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+}
+
+.ffbot-head small {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: .8;
+}
+
+.ffbot-head .x {
+  width: 36px;
+  height: 36px;
+  margin-left: auto;
+
+  display: grid;
+  place-items: center;
+
+  border: 0;
+  border-radius: 50%;
+  background: rgba(18, 55, 42, .1);
+
+  color: var(--leaf);
+  font-size: 25px;
+  line-height: 1;
+
+  cursor: pointer;
+  transition: background .2s, transform .2s;
+}
+
+.ffbot-head .x:hover {
+  background: rgba(18, 55, 42, .18);
+  transform: rotate(90deg);
+}
+
+/* ---------- Chat messages area ---------- */
+
+.ffbot-log {
+  flex: 1;
+  min-height: 0;
+
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  padding: 17px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  background: var(--b-bg);
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--turmeric) transparent;
+}
+
+.ffbot-log::-webkit-scrollbar {
+  width: 5px;
+}
+
+.ffbot-log::-webkit-scrollbar-thumb {
+  background: var(--turmeric);
+  border-radius: 10px;
+}
+
+/* ---------- Individual messages ---------- */
+
+.ffbot-msg {
+  max-width: 88%;
+  width: fit-content;
+
+  padding: 11px 14px;
+
+  border-radius: 16px;
+
+  font-size: 14px;
+  line-height: 1.55;
+
+  overflow-wrap: anywhere;
+  animation: ffbotMessage .2s ease;
+}
+
+@keyframes ffbotMessage {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ffbot-msg.bot {
+  align-self: flex-start;
+
+  background: var(--b-bot);
+  color: var(--b-text);
+
+  border: 1px solid var(--b-line);
+  border-bottom-left-radius: 5px;
+}
+
+.ffbot-msg.user {
+  align-self: flex-end;
+
+  background: var(--b-user);
+  color: var(--b-user-ink);
+
+  border-bottom-right-radius: 5px;
+}
+
+.ffbot-msg b {
+  font-weight: 800;
+}
+
+.ffbot-msg a {
+  color: var(--price);
+  font-weight: 700;
+}
+
+/* ---------- Dish recommendations ---------- */
+
+.ffbot-dish {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  margin-top: 10px;
+  padding-top: 10px;
+
+  border-top: 1px dashed var(--b-line);
+}
+
+.ffbot-dish span {
+  min-width: 0;
+  font-size: 13px;
+}
+
+.ffbot-dish span b {
+  display: block;
+  color: var(--b-text);
+}
+
+.ffbot-dish em {
+  display: block;
+  margin-top: 3px;
+
+  color: var(--b-muted);
+  font-size: 12px;
+  font-style: normal;
+}
+
+.ffbot-add {
+  flex-shrink: 0;
+
+  border: 0;
+  border-radius: 999px;
+
+  padding: 7px 13px;
+
+  background: var(--turmeric);
+  color: var(--leaf);
+
+  font-size: 12px;
+  font-weight: 800;
+
+  cursor: pointer;
+  transition: transform .15s, background .15s;
+}
+
+.ffbot-add:hover {
+  background: #EBAA16;
+  transform: translateY(-1px);
+}
+
+.ffbot-add:active {
+  transform: scale(.95);
+}
+
+.ffbot-add:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+/* ---------- Quick suggestion buttons ---------- */
+
+.ffbot-chips {
+  display: flex;
+  gap: 7px;
+
+  overflow-x: auto;
+  padding: 10px 13px 8px;
+
+  background: var(--b-bg);
+
+  scrollbar-width: none;
+}
+
+.ffbot-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.ffbot-chips button {
+  flex: 0 0 auto;
+
+  border: 1px solid var(--b-line);
+  border-radius: 999px;
+
+  padding: 7px 12px;
+
+  background: var(--b-surface);
+  color: var(--b-text);
+
+  font-family: var(--body);
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+}
+
+.ffbot-chips button:hover {
+  border-color: var(--turmeric);
+  background: var(--leaf-soft);
+}
+
+/* ---------- Message input area ---------- */
+
+.ffbot-form {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  padding: 12px 13px 14px;
+
+  background: var(--b-bg);
+  border-top: 1px solid var(--b-line);
+}
+
+.ffbot-form input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+
+  border: 1px solid var(--b-line);
+  border-radius: 999px;
+
+  padding: 0 16px;
+
+  background: var(--b-surface);
+  color: var(--b-text);
+
+  font-family: var(--body);
+  font-size: 14px;
+}
+
+.ffbot-form input::placeholder {
+  color: var(--b-muted);
+  opacity: .85;
+}
+
+.ffbot-form input:focus {
+  outline: 2px solid var(--turmeric);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+.ffbot-form button {
+  flex-shrink: 0;
+
+  height: 44px;
+  border: 0;
+  border-radius: 999px;
+
+  padding: 0 19px;
+
+  background: var(--b-user);
+  color: var(--b-user-ink);
+
+  font-family: var(--body);
+  font-size: 14px;
+  font-weight: 800;
+
+  cursor: pointer;
+  transition: transform .15s, opacity .15s;
+}
+
+.ffbot-form button:hover {
+  opacity: .9;
+  transform: translateY(-1px);
+}
+
+.ffbot-form button:active {
+  transform: scale(.96);
+}
+
+/* ---------- Typing indicator ---------- */
+
+.ffbot-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 3px;
+}
+
+.ffbot-typing i {
+  width: 7px;
+  height: 7px;
+
+  display: block;
+
+  border-radius: 50%;
+  background: var(--b-muted);
+
+  animation: ffbotDot 1.2s infinite ease-in-out;
+}
+
+.ffbot-typing i:nth-child(2) {
+  animation-delay: .15s;
+}
+
+.ffbot-typing i:nth-child(3) {
+  animation-delay: .3s;
+}
+
+@keyframes ffbotDot {
+  0%, 60%, 100% {
+    opacity: .35;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-5px);
+  }
+}
+
+/* ---------- Mobile responsive ---------- */
+
+@media (max-width: 640px) {
+  .ffbot-fab {
+    width: 56px;
+    height: 56px;
+    right: 15px;
+    bottom: 15px;
+  }
+
+  body:has(#floating-cart-bar:not(.hidden)) .ffbot-fab {
+    bottom: 86px;
+  }
+
+  .ffbot-panel {
+    right: 10px;
+    bottom: 82px;
+
+    width: calc(100vw - 20px);
+    height: min(620px, calc(100dvh - 105px));
+
+    border-radius: 19px;
+  }
+
+  .ffbot-head {
+    min-height: 65px;
+    padding: 12px 14px;
+  }
+
+  .ffbot-log {
+    padding: 13px;
+  }
+
+  .ffbot-msg {
+    max-width: 92%;
+    font-size: 13px;
+  }
+
+  .ffbot-form {
+    padding: 10px;
+  }
+
+  .ffbot-form input {
+    height: 42px;
+    font-size: 13px;
+  }
+
+  .ffbot-form button {
+    height: 42px;
+    padding: 0 15px;
+  }
+}
+
+/* ---------- Small mobile screens ---------- */
+
+@media (max-width: 360px) {
+  .ffbot-panel {
+    right: 7px;
+    width: calc(100vw - 14px);
+  }
+
+  .ffbot-msg {
+    max-width: 95%;
+  }
+
+  .ffbot-chips button {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+}
+
+/* ---------- Accessibility ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  #ffbot-root *,
+  #ffbot-root *::before,
+  #ffbot-root *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+

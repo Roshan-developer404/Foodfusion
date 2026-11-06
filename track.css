@@ -1,0 +1,17 @@
+/* FoodFusion add-on: live order tracking */
+.eta-box { margin: 6px 0 22px; padding: 16px 18px; border-radius: 20px; background: var(--surface-2); border: 1px solid var(--line); }
+.eta-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 16px; }
+.eta-msg { font-weight: 700; }
+.eta-time { font: 800 26px var(--display); color: var(--price); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.eta-time small { font: 600 12px var(--body); color: var(--muted); margin-left: 6px; letter-spacing: 0; }
+.road { position: relative; height: 34px; margin-top: 12px; }
+.road::before { content: ''; position: absolute; left: 0; right: 0; top: 24px; border-top: 3px dashed var(--line); }
+.road::after { content: ''; position: absolute; left: 0; top: 24px; height: 3px; width: calc(var(--r, 0) * 100%); background: var(--ok); border-radius: 3px; transition: width 1s linear; }
+.road .home, .road .rest { position: absolute; top: 0; font-size: 20px; line-height: 1; }
+.road .rest { left: 0; }
+.road .home { right: 0; }
+.rider { position: absolute; top: 0; left: calc(var(--r, 0) * (100% - 26px)); font-size: 24px; line-height: 1; transform: scaleX(-1); transition: left 1s linear; animation: bob .5s ease-in-out infinite alternate; }
+.eta-box.done .rider { animation: none; }
+@keyframes bob { to { margin-top: -3px; } }
+.eta-box.done .eta-time { color: var(--ok); }
+.eta-note { margin: 10px 0 0; font-size: 12px; color: var(--muted); }
